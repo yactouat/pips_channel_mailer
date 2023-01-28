@@ -1,0 +1,20 @@
+# /etc/msmtprc is where that file will live inside the container
+
+# this means that these will be the default settings used in all accounts
+defaults
+
+auth on
+tls on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+logfile ~/.msmtp.log
+
+# example with a gmail address
+account gmail
+host smtp.gmail.com
+port 587
+from me@gmail.com
+user me@gmail.com
+password pwd_from_application_passwords_in_google_security_settings
+
+# defines the default account
+account default : gmail
