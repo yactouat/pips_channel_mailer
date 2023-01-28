@@ -18,6 +18,8 @@
 
 this repo holds the code for my Google Cloud Function that is triggered when a new user is created in my PIPS, its job is to parse the received the message and to call whatever code is responsible for sending the email to the user
 
+the function does not allow unauthorized access, it's only triggered by a Pub/Sub topic updates happening in the GCP project
+
 ## pre requisites
 
 - a Google Cloud project

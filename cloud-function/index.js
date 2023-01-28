@@ -7,6 +7,8 @@
 exports.getSubMessage = (event, context) => {
   const message = event.data
     ? Buffer.from(event.data, "base64").toString()
-    : "could not parse the Pub/Sub message";
-  console.log(message, event.attributes);
+    : "could not parse the Pub/Sub message"; // contains the email address of the newly created user
+  if (event.attributes.env === "production") {
+    // TODO
+  }
 };
