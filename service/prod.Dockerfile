@@ -9,9 +9,7 @@ WORKDIR /usr/src/app
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
 COPY package*.json ./
-RUN npm install
-# If you are building your code for production
-# RUN npm ci --only=production
+RUN npm ci
 # Bundle app source
 COPY . .
 # Build the app
@@ -22,8 +20,6 @@ WORKDIR /usr/src/app
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/dist ./dist
 COPY --from=build /usr/src/app/package.json ./package.json
-COPY --from=build /usr/src/app/jest.config.js ./jest.config.js
-COPY --from=build /usr/src/app/tests ./tests
 EXPOSE 8080
 CMD [ "node", "./dist/mailer.js" ]
 

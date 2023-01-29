@@ -1,12 +1,12 @@
 {
   "name": "pips_channel_mailer",
-  "version": "0.0.1",
+  "version": "0.0.14",
   "description": "mailer.yactouat.com",
   "main": "./dist/mailer.js",
   "scripts": {
     "build": "tsc",
     "dev": "NODE_ENV=development ts-node ./src/mailer.ts",
-    "start": "NODE_ENV=production npm run migrate-db && node ./dist/mailer.js",
+    "start": "NODE_ENV=production node ./dist/mailer.js",
     "test": "jest --clearCache && jest"
   },
   "engines": {

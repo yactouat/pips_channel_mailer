@@ -1,4 +1,4 @@
-name: cd
+name: mailer cd
 on:
   # this action will only run on each push to main, if you prefer continuous deployment
   # push:
@@ -23,15 +23,19 @@ jobs:
           registry: ${{ secrets.GCP_REGION }}-docker.pkg.dev
           username: _json_key
           password: ${{ secrets.GCP_GH_SA_KEY }}
+      - name: copying msmtprc
+        working-directory: ./service
+        run: echo "${{ secrets.MSMTPRC }}" > msmtprc
       - id: docker-push-tagged
         name: Tag Docker image and push to Google Artifact Registry
         uses: docker/build-push-action@v3
         with:
           # TODO set up prod Dockerfile
-          file: ./prod.Dockerfile
+          file: ./service/prod.Dockerfile
+          context: ./service
           push: true
           tags: |
-            ${{ secrets.GCP_ARTIFACT_REPO }}mailer:${{ github.sha }}
+            ${{ secrets.GCP_ARTIFACT_REPO }}/mailer:${{ github.sha }}
 
       # Setup gcloud CLI
       - id: "auth"
@@ -39,18 +43,16 @@ jobs:
         with:
           credentials_json: "${{ secrets.GCP_GH_SA_KEY }}"
 
-      - name: "Set up Cloud SDK"
-        uses: "google-github-actions/setup-gcloud@v1"
+      # not passing `-allow-unauthenticated` flag here because it is recommended to not let the CD pipeline take the responsibility of setting up authentication
+      - id: "deploy"
+        uses: "google-github-actions/deploy-cloudrun@v1"
+        with:
+          service: "${{ secrets.GCP_CLOUDRUN_SERVICE_NAME }}"
+          image: "${{ secrets.GCP_ARTIFACT_REPO }}/mailer:${{ github.sha }}"
+          env_vars: |
+            NODE_ENV=production
+          flags: "--port=${{ secrets.GCP_PORT }}"
+          region: "${{ secrets.GCP_REGION }}"
 
-      # Configure Docker with Credentials
-      - name: Configure Docker
-        run: |
-          gcloud auth configure-docker ${{ secrets.GCP_REGION }}-docker.pkg.dev
-
-      # Deploy the Docker image to Cloud Run
-      - name: Deploy
-        run: |
-          gcloud run deploy ${{ secrets.GCP_CLOUDRUN_SERVICE_NAME }} --image=${{ secrets.GCP_ARTIFACT_REPO }}mailer:${{ github.sha }} \
-          --allow-unauthenticated --region=${{ secrets.GCP_REGION }} --port=${{ vars.GCP_PORT }} \
-          --update-secrets=${{ secrets.MSMTPRC }}=MSMTPRC:latest \
-          --set-env-vars=MSMTPRC=${{ secrets.MSMTPRC }},NODE_ENV=production
+      - name: "deploy output"
+        run: 'curl "${{ steps.deploy.outputs.url }}"'

@@ -1,4 +1,4 @@
-name: CI
+name: mailer ci
 
 on:
   push:
@@ -9,11 +9,14 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    environment: test
 
     steps:
       - name: checkout code
         uses: actions/checkout@v3
       - name: jest tests
+        working-directory: ./service
         run: |
-          docker compose up -d \
+          echo "${{ secrets.MSMTPRC }}" > msmtprc \
+          && docker compose up -d \
           && docker compose run mailer bash -c "npm run test"

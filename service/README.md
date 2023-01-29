@@ -9,6 +9,7 @@
   - [GCP project](#gcp-project)
     - [the actual stuff](#the-actual-stuff)
     - [the SDK](#the-sdk)
+  - [CI/CD](#cicd)
   - [Contributors](#contributors)
 
 <!-- /TOC -->
@@ -38,6 +39,15 @@ this repo holds the code for my PIPS mailer service, instead of using the Gmail 
 ### the SDK
 
 If you're running this in full local mode, you'll need to install the GCP SDK; I plan to do this in a not too distant future, but if you do it before me, I'd be happy to accept a PR !
+
+## CI/CD
+
+everything is done through Github Actions, there are 2 workflows:
+
+- one for ci
+- one for cd
+
+please checko the `.github` folder for more details (for instance, the environments and the secrets you will need to set at GitHub repo level)
 
 ## Contributors
 
