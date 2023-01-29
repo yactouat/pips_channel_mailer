@@ -13,7 +13,7 @@ const sendEmail = async (to: string, subject: string, text: string) => {
       from: process.env.PIPS_OWNER_EMAIL,
       to: to,
       subject: subject,
-      text: text,
+      html: text,
     },
     (err, info) => {
       console.log("SENDMAIL SUCCESS", info?.response);

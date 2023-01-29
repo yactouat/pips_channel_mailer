@@ -52,8 +52,16 @@ jobs:
             NODE_ENV=production
             PIPS_OWNER_EMAIL=${{ secrets.PIPS_OWNER_EMAIL }}
             PIPS_TOKEN=${{ secrets.PIPS_TOKEN }}
+            SUPABASE_POSTGRES_ROOT_CERT_FILE_NAME=${{ secrets.SUPABASE_POSTGRES_ROOT_CERT_FILE_NAME }}
+            PGHOST=${{ secrets.PGHOST }}
+            PGPASSWORD=${{ secrets.PGPASSWORD }}
+            PGPORT=${{ secrets.PGPORT }}
+            PGSSLMODE=require
+            PGUSER=${{ secrets.PGUSER }}
+            PGDATABASE=${{ secrets.PGDATABASE }}
           flags: "--port=${{ secrets.CLOUDRUN_SERVICE_PORT }}"
           region: "${{ secrets.CLOUDRUN_SERVICE_REGION }}"
+          secrets: ${{ secrets.SUPABASE_POSTGRES_ROOT_CERT_FILE_NAME }}=SUPABASE_POSTGRES_ROOT_CERT:latest
 
       - name: "deploy output"
         run: 'curl "${{ steps.deploy.outputs.url }}"'

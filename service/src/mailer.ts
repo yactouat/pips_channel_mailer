@@ -1,5 +1,11 @@
 import { body, validationResult } from "express-validator";
+import crypto from "crypto";
 import express from "express";
+import {
+  getPgClient,
+  getUserFromDb,
+} from "pips_resources_definitions/dist/behaviors";
+import { TokenResource } from "pips_resources_definitions/dist/resources";
 
 import sendEmail from "./send-email";
 import sendResponse from "./send-response";
@@ -22,16 +28,43 @@ MAILER.post(
     }
     if (!errors.isEmpty() || req.body.pipsToken !== process.env.PIPS_TOKEN) {
       sendResponse(res, 401, "invalid request");
-      console.log(req.body, process.env.PIPS_TOKEN, errors);
       return;
     } else {
-      sendEmail(
-        req.body.userEmail,
-        "validate your registration to yactouat.com",
-        // TODO construct validation link
-        "Hey 👋 and welcome to yactouat.com! Please click on the link below to validate your registration. Thanks for joining my PIPS! 🙏"
-      );
-      sendResponse(res, 200, "mailer has processed input");
+      // creating a validation token
+      const validationToken: TokenResource = {
+        type: "User_Verification",
+        token: crypto.randomBytes(32).toString("hex"),
+      };
+      console.log(validationToken);
+      try {
+        // store validation token in database
+        const pgClient = getPgClient();
+        await pgClient.connect();
+        const insertToken = await pgClient.query(
+          "INSERT INTO tokens(token) VALUES ($1) RETURNING *",
+          [validationToken.token]
+        );
+        const token = insertToken.rows[0] as TokenResource;
+        // get user linked to email
+        const user = await getUserFromDb(req.body.userEmail, pgClient);
+        // store token association with user in database
+        await pgClient.query(
+          "INSERT INTO tokens_users(token_id, user_id, type) VALUES ($1, $2, $3) RETURNING *",
+          [token.id, user.id, validationToken.type.toLowerCase()]
+        );
+        // send email to user with validation link containing validation token
+        sendEmail(
+          req.body.userEmail,
+          "validate your registration to yactouat.com",
+          `<p>Hey 👋 and welcome to yactouat.com! Please click on <a href="www.yactouat.com/?vt=${validationToken}}">this link</a> to validate your registration. Thanks for joining my PIPS! 🙏</p>`
+        );
+        sendResponse(res, 200, "mailer has processed input");
+        await pgClient.end();
+      } catch (error) {
+        sendResponse(res, 500, "mailer has failed");
+        // TODO better observability here
+        console.log(error);
+      }
     }
   }
 );
