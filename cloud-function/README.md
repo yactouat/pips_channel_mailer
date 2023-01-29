@@ -43,6 +43,8 @@ If you're running this in full local mode, you'll need to install the GCP SDK; I
 ## how to use
 
 - just code and deploy, it's that simple
+- required env vars are:
+  - `MAILER_SERVICE_URL`, the URL of the mailer service which will actually send the email
 
 ## Contributors
 

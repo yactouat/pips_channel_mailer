@@ -29,6 +29,7 @@ this repo holds the code for my PIPS mailer service, instead of using the Gmail 
 
 - create a `msmtprc` at the root of the folder after the example in `msmtprc.example`, this file is versioned by default, so do not commit it or its contents if you dont want the whole Internet to send emails on your behalf
 - `docker compose up`
+- if you want to try the wiring of `msmtp`, you can run `npm run send-email-dev` from within the container
 
 ## GCP project
 

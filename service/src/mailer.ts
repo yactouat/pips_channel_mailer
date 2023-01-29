@@ -1,4 +1,5 @@
 import express from "express";
+import sendEmail from "./send-email";
 import sendResponse from "./send-response";
 
 const MAILER = express();
@@ -9,7 +10,8 @@ MAILER.get("/", async (req, res) => {
 });
 
 MAILER.post("/", async (req, res) => {
-  console.log(req.body);
+  // THIS IS A TEST
+  sendEmail("yactouat@hotmail.com", "test", "test");
   sendResponse(res, 200, "mailer has processed input");
 });
 
