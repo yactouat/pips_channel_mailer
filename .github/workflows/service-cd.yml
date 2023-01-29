@@ -1,8 +1,8 @@
 name: mailer cd
 on:
   # this action will only run on each push to main, if you prefer continuous deployment
-  # push:
-  #   branches: ["main"]
+  push:
+    branches: ["main"]
   # this action will only run if you create a release, if you prefer continuous delivery
   release:
     types: [created]
