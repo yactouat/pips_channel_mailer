@@ -50,6 +50,8 @@ jobs:
           image: "${{ secrets.GCP_ARTIFACT_REPO }}/mailer:${{ github.sha }}"
           env_vars: |
             NODE_ENV=production
+            PIPS_OWNER_EMAIL=${{ secrets.PIPS_OWNER_EMAIL }}
+            PIPS_TOKEN=${{ secrets.PIPS_TOKEN }}
           flags: "--port=${{ secrets.CLOUDRUN_SERVICE_PORT }}"
           region: "${{ secrets.CLOUDRUN_SERVICE_REGION }}"
 

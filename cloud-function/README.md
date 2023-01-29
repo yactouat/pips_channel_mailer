@@ -16,7 +16,7 @@
 
 ## what is this ?
 
-this repo holds the code for my Google Cloud Function that is triggered when a new user is created in my PIPS, its job is to parse the received the message and to call whatever code is responsible for sending the email to the user
+this repo holds the code for my Google Cloud Function that is triggered when a new user is created in my PIPS via a push Pub/Sub subscription using EventArc, its job is to parse the received the message and to call whatever code is responsible for sending the email to the user
 
 the function does not allow unauthorized access, it's only triggered by a Pub/Sub topic updates happening in the GCP project
 
@@ -45,6 +45,7 @@ If you're running this in full local mode, you'll need to install the GCP SDK; I
 - just code and deploy, it's that simple
 - required env vars are:
   - `MAILER_SERVICE_URL`, the URL of the mailer service which will actually send the email
+  - `PIPS_TOKEN`, a token of your choice used to authenticate to the PIPS call to the mailer service
 
 ## Contributors
 

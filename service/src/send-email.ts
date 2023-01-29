@@ -1,6 +1,9 @@
 import nodemailer from "nodemailer";
 
 const sendEmail = async (to: string, subject: string, text: string) => {
+  console.log(
+    "sending email to " + to + " FROM " + process.env.PIPS_OWNER_EMAIL
+  );
   let transporter = nodemailer.createTransport({
     sendmail: true,
     newline: "unix",
@@ -8,14 +11,13 @@ const sendEmail = async (to: string, subject: string, text: string) => {
   transporter.sendMail(
     {
       from: process.env.PIPS_OWNER_EMAIL,
-      to: "recipient@gmail.com",
-      subject: "Message",
-      text: "I hope this message gets delivered!",
+      to: to,
+      subject: subject,
+      text: text,
     },
     (err, info) => {
-      console.log(info.envelope);
-      console.log(info.messageId);
-      console.error(err?.message);
+      console.log("SENDMAIL SUCCESS", info?.response);
+      console.error("SENDMAIL ERROR", err?.message);
     }
   );
 };

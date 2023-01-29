@@ -20,6 +20,7 @@ WORKDIR /usr/src/app
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/dist ./dist
 COPY --from=build /usr/src/app/package.json ./package.json
+ENV NODE_ENV=production
 EXPOSE 8080
 CMD [ "node", "./dist/mailer.js" ]
 

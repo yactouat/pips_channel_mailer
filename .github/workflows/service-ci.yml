@@ -18,5 +18,5 @@ jobs:
         working-directory: ./service
         run: |
           echo "${{ secrets.MSMTPRC }}" > msmtprc \
-          && docker compose -f ci.docker-compose.yml up -d \
-          && docker compose -f ci.docker-compose.yml run mailer bash -c "./node_modules/.bin/jest --clearCache && ./node_modules/.bin/jest"
+          && docker compose up -d \
+          && docker compose run mailer bash -c "./node_modules/.bin/jest --clearCache && ./node_modules/.bin/jest"

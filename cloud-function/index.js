@@ -18,11 +18,12 @@ exports.getSubMessage = async (event, context) => {
     : "could not parse the Pub/Sub message";
   try {
     await axios.post(process.env.MAILER_SERVICE_URL, {
+      pipsToken: process.env.PIPS_TOKEN,
       userEmail: usrEmailMsg,
     });
     // TODO better observability here
     console.info(
-      `sending email to ${usrEmailMsg} resulted in status code ${res.status}`
+      `sending email request to ${usrEmailMsg} resulted in status code ${res.status}`
     );
   } catch (error) {
     console.error(error);

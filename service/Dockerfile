@@ -24,6 +24,8 @@ COPY --from=build /usr/src/app/dist ./dist
 COPY --from=build /usr/src/app/package.json ./package.json
 COPY --from=build /usr/src/app/jest.config.js ./jest.config.js
 COPY --from=build /usr/src/app/tests ./tests
+COPY .env ./.env
+ENV NODE_ENV=development
 EXPOSE 8080
 CMD [ "node", "./dist/mailer.js" ]
 
