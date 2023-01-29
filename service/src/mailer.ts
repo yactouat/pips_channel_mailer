@@ -35,7 +35,6 @@ MAILER.post(
         type: "User_Verification",
         token: crypto.randomBytes(32).toString("hex"),
       };
-      console.log(validationToken);
       try {
         // store validation token in database
         const pgClient = getPgClient();
@@ -63,7 +62,7 @@ MAILER.post(
       } catch (error) {
         sendResponse(res, 500, "mailer has failed");
         // TODO better observability here
-        console.log(error);
+        console.error(error);
       }
     }
   }
