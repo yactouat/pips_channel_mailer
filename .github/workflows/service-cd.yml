@@ -20,9 +20,9 @@ jobs:
       - name: Login to GAR
         uses: docker/login-action@v2
         with:
-          registry: ${{ secrets.GCP_REGION }}-docker.pkg.dev
+          registry: ${{ secrets.CLOUDRUN_SERVICE_REGION }}-docker.pkg.dev
           username: _json_key
-          password: ${{ secrets.GCP_GH_SA_KEY }}
+          password: ${{ secrets.CLOUD_RUN_DEPLOYER_SA_KEY }}
       - name: copying msmtprc
         working-directory: ./service
         run: echo "${{ secrets.MSMTPRC }}" > msmtprc
@@ -30,7 +30,6 @@ jobs:
         name: Tag Docker image and push to Google Artifact Registry
         uses: docker/build-push-action@v3
         with:
-          # TODO set up prod Dockerfile
           file: ./service/prod.Dockerfile
           context: ./service
           push: true
@@ -41,18 +40,18 @@ jobs:
       - id: "auth"
         uses: "google-github-actions/auth@v1"
         with:
-          credentials_json: "${{ secrets.GCP_GH_SA_KEY }}"
+          credentials_json: "${{ secrets.CLOUD_RUN_DEPLOYER_SA_KEY }}"
 
       # not passing `-allow-unauthenticated` flag here because it is recommended to not let the CD pipeline take the responsibility of setting up authentication
       - id: "deploy"
         uses: "google-github-actions/deploy-cloudrun@v1"
         with:
-          service: "${{ secrets.GCP_CLOUDRUN_SERVICE_NAME }}"
+          service: "${{ secrets.CLOUDRUN_SERVICE }}"
           image: "${{ secrets.GCP_ARTIFACT_REPO }}/mailer:${{ github.sha }}"
           env_vars: |
             NODE_ENV=production
-          flags: "--port=${{ secrets.GCP_PORT }}"
-          region: "${{ secrets.GCP_REGION }}"
+          flags: "--port=${{ secrets.CLOUDRUN_SERVICE_PORT }}"
+          region: "${{ secrets.CLOUDRUN_SERVICE_REGION }}"
 
       - name: "deploy output"
         run: 'curl "${{ steps.deploy.outputs.url }}"'
