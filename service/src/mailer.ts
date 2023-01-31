@@ -37,23 +37,24 @@ MAILER.post(
       };
       try {
         // store validation token in database
-        const pgClient = getPgClient();
-        await pgClient.connect();
-        const insertToken = await pgClient.query(
+        const pgClient1 = getPgClient();
+        await pgClient1.connect();
+        const insertToken = await pgClient1.query(
           "INSERT INTO tokens(token) VALUES ($1) RETURNING *",
           [validationToken.token]
         );
-        await pgClient.end();
+        await pgClient1.end();
         const token = insertToken.rows[0] as TokenResource;
         // get user linked to email
-        const user = await getUserFromDb(req.body.userEmail, pgClient);
+        const user = await getUserFromDb(req.body.userEmail, getPgClient());
         // store token association with user in database
-        await pgClient.connect();
-        await pgClient.query(
+        const pgClient2 = getPgClient();
+        await pgClient2.connect();
+        await pgClient2.query(
           "INSERT INTO tokens_users(token_id, user_id, type) VALUES ($1, $2, $3) RETURNING *",
           [token.id, user.id, validationToken.type.toLowerCase()]
         );
-        await pgClient.end();
+        await pgClient2.end();
         // send email to user with validation link containing validation token
         sendEmail(
           user.email,
