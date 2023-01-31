@@ -43,14 +43,17 @@ MAILER.post(
           "INSERT INTO tokens(token) VALUES ($1) RETURNING *",
           [validationToken.token]
         );
+        await pgClient.end();
         const token = insertToken.rows[0] as TokenResource;
         // get user linked to email
         const user = await getUserFromDb(req.body.userEmail, pgClient);
         // store token association with user in database
+        await pgClient.connect();
         await pgClient.query(
           "INSERT INTO tokens_users(token_id, user_id, type) VALUES ($1, $2, $3) RETURNING *",
           [token.id, user.id, validationToken.type.toLowerCase()]
         );
+        await pgClient.end();
         // send email to user with validation link containing validation token
         sendEmail(
           user.email,
@@ -63,7 +66,6 @@ MAILER.post(
           )}">this link</a> to validate your registration. Thanks for joining my PIPS! 🙏</p>`
         );
         sendResponse(res, 200, "mailer has processed input");
-        await pgClient.end();
       } catch (error) {
         sendResponse(res, 500, "mailer has failed");
         // TODO better observability here
