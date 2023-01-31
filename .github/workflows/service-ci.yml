@@ -19,4 +19,5 @@ jobs:
         run: |
           echo "${{ secrets.MSMTPRC }}" > msmtprc \
           && docker compose up -d \
+          && sleep 5 \
           && docker compose run mailer bash -c "./node_modules/.bin/jest --clearCache && ./node_modules/.bin/jest"

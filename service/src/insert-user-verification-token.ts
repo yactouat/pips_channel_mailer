@@ -1,1 +1,4 @@
-const insertUserVerificationToken = (userEmail: string) => {}; // TODO
+// TODO
+const insertUserVerificationToken = (userEmail: string): boolean => {
+  return false;
+};

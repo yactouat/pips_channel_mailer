@@ -3,5 +3,33 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      - PGDATABASE=api
+      - PGHOST=pgsql
+      - PGPORT=5432
+      - PGUSER=usr
+      - PGPASSWORD=pwd
     ports:
       - 8080:8080
+    depends_on:
+      - pgsql
+
+  pgadmin:
+    image: dpage/pgadmin4:6.19
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_PASSWORD: pwd
+      PGADMIN_DEFAULT_EMAIL: yacine.touati.pro@gmail.com
+      PGADMIN_LISTEN_PORT: 8080
+    ports:
+      - 8081:8080
+
+  pgsql:
+    image: postgres:15.1
+    restart: always
+    environment:
+      POSTGRES_DB: api
+      POSTGRES_PASSWORD: pwd
+      POSTGRES_USER: usr
+    ports:
+      - 5432:5432
