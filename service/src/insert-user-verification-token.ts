@@ -1,1 +1,1 @@
-const insertUserVerificationToken = () => {}; // TODO
+const insertUserVerificationToken = (userEmail: string) => {}; // TODO
