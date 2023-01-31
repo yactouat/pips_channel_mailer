@@ -55,7 +55,12 @@ MAILER.post(
         sendEmail(
           user.email,
           "validate your registration to yactouat.com",
-          `<p>Hey 👋 and welcome to yactouat.com! Please click on <a href="www.yactouat.com/?vt=${validationToken.token}}"&e=${user.email}>this link</a> to validate your registration. Thanks for joining my PIPS! 🙏</p>`
+          `<p>Hey 👋 and welcome to yactouat.com! Please click on <a href="${encodeURI(
+            "https://www.yactouat.com/?vt=" +
+              validationToken.token +
+              "&e=" +
+              user.email
+          )}">this link</a> to validate your registration. Thanks for joining my PIPS! 🙏</p>`
         );
         sendResponse(res, 200, "mailer has processed input");
         await pgClient.end();
