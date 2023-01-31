@@ -34,7 +34,8 @@ this repo holds the code for my PIPS mailer service, instead of using the Gmail 
   - `PGDATABASE`, `PGHOST`, `PGPASSWORD`, `PGPORT`, `PGUSER` (`PGSSLMODE` and `SUPABASE_POSTGRES_ROOT_CERT_FILE_NAME`, if you require it) for the database connection; also your data schema must correspond to what's described in `pips_resources_definitions` package at the version you're using
   - a `PIPS_OWNER_EMAIL` that is the email address of the owner of the PIPS instance, on whose behalf the emails will be sent, it must correspond to the the email address configured in the `msmtprc` file
   - a `PIPS_TOKEN`, this is an arbitratry token that validates the origin of the request to the mailer service
-- a POST call to `/` will return 200 if your JSON payload contains a valid `pipsToken` and a valid `email` field
+- a POST call to `/` will return 200 if your JSON payload contains a valid `pipsToken` and a valid `email` field, or a 500 otherwise
+- a successful call will send an email to the `email` field of the JSON payload, with the `PIPS_OWNER_EMAIL` as the sender
 
 ## GCP project
 
