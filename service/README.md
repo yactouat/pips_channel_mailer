@@ -36,6 +36,7 @@ this repo holds the code for my PIPS mailer service, instead of using the Gmail 
   - a `PIPS_TOKEN`, this is an arbitratry token that validates the origin of the request to the mailer service
 - a POST call to `/` will return 200 if your JSON payload contains a valid `pipsToken` and a valid `email` field, or a 500 otherwise
 - a successful call will send an email to the `email` field of the JSON payload, with the `PIPS_OWNER_EMAIL` as the sender
+- you can also run `sh test.sh` to run the dockerized integration tests
 
 ## GCP project
 

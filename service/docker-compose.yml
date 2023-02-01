@@ -14,6 +14,7 @@ services:
     depends_on:
       - pgsql
 
+  # ! to use for convenience in local dev mode, completely useless in a CI/CD pipeline
   # pgadmin:
   #   image: dpage/pgadmin4:6.19
   #   restart: unless-stopped

@@ -1,4 +1,4 @@
-FROM node:18.13.0 as system
+FROM node:18.13.0 as mailer
 RUN apt update && apt upgrade -y && apt install -y mailutils msmtp msmtp-mta
 COPY ./msmtprc /etc/msmtprc
 
@@ -15,10 +15,10 @@ COPY . .
 # Build the app
 RUN npm run build
 
-FROM system
+FROM mailer
 WORKDIR /usr/src/app
 COPY --from=build /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/dist/src ./dist
 COPY --from=build /usr/src/app/package.json ./package.json
 ENV NODE_ENV=production
 EXPOSE 8080

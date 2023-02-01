@@ -9,6 +9,7 @@ import {
 import { TokenResource } from "pips_resources_definitions/dist/resources";
 
 import sendEmail from "./send-email";
+import saveUserVerifToken from "./insert-user-verification-token";
 
 const MAILER = express();
 MAILER.use(express.json());
@@ -23,6 +24,7 @@ MAILER.post(
   body("pipsToken").notEmpty().isString(),
   async (req, res) => {
     const errors = validationResult(req);
+    // ! you need PIPS_OWNER_EMAIL and PIPS_TOKEN in your .env file or vars here
     if (process.env.NODE_ENV === "development") {
       require("dotenv").config();
     }
@@ -31,47 +33,22 @@ MAILER.post(
       return;
     }
     // creating a validation token
-    const validationToken: TokenResource = {
-      type: "User_Verification",
-      token: crypto.randomBytes(32).toString("hex"),
-    };
-    try {
-      // store validation token in database
-      const pgClient1 = getPgClient();
-      await pgClient1.connect();
-      const insertToken = await pgClient1.query(
-        "INSERT INTO tokens(token) VALUES ($1) RETURNING *",
-        [validationToken.token]
-      );
-      await pgClient1.end();
-      const token = insertToken.rows[0] as TokenResource;
-      // get user linked to email
-      const user = await getUserFromDb(req.body.userEmail, getPgClient());
-      // store token association with user in database
-      const pgClient2 = getPgClient();
-      await pgClient2.connect();
-      await pgClient2.query(
-        "INSERT INTO tokens_users(token_id, user_id, type) VALUES ($1, $2, $3) RETURNING *",
-        [token.id, user.id, validationToken.type.toLowerCase()]
-      );
-      await pgClient2.end();
-      // send email to user with validation link containing validation token
-      sendEmail(
-        user.email,
-        "validate your registration to yactouat.com",
-        `<p>Hey 👋 and welcome to yactouat.com! Please click on <a href="${encodeURI(
-          "https://www.yactouat.com/?vt=" +
-            validationToken.token +
-            "&e=" +
-            user.email
-        )}">this link</a> to validate your registration. Thanks for joining my PIPS! 🙏</p>`
-      );
-      sendJsonResponse(res, 200, "mailer has processed input");
-    } catch (error) {
+    const userEmail = req.body.userEmail;
+    const verifToken = crypto.randomBytes(32).toString("hex");
+    const verifTokenProcess = await saveUserVerifToken(userEmail, verifToken);
+    if (!verifTokenProcess) {
       sendJsonResponse(res, 500, "mailer has failed");
-      // TODO better observability here
-      console.error(error);
+      return;
     }
+    // send email to user with validation link containing validation token
+    sendEmail(
+      userEmail,
+      "validate your registration to yactouat.com",
+      `<p>Hey 👋 and welcome to yactouat.com! Please click on <a href="${encodeURI(
+        "https://www.yactouat.com/?vt=" + verifToken + "&e=" + userEmail
+      )}">this link</a> to validate your registration. Thanks for joining my PIPS! 🙏</p>`
+    );
+    sendJsonResponse(res, 200, "mailer has processed input");
   }
 );
 

@@ -1,6 +1,6 @@
 {
   "name": "pips_channel_mailer",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "mailer.yactouat.com",
   "main": "./dist/mailer.js",
   "scripts": {
@@ -9,7 +9,7 @@
     "send-email": "NODE_ENV=production node ./dist/send-email.js",
     "send-email-dev": "NODE_ENV=development ts-node ./src/send-email.ts",
     "start": "NODE_ENV=production node ./dist/mailer.js",
-    "test": "jest --clearCache && jest"
+    "test": "jest --clearCache && jest --detectOpenHandles"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -32,6 +32,6 @@
     "express": "^4.18.2",
     "express-validator": "^6.14.3",
     "nodemailer": "^6.9.1",
-    "pips_resources_definitions": "^7.4.0"
+    "pips_resources_definitions": "^8.0.1"
   }
 }
