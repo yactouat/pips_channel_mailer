@@ -33,19 +33,28 @@ MAILER.post(
       return;
     }
     // creating a validation token
-    const userEmail = req.body.userEmail;
+    const user = await getUserFromDb(req.body.userEmail, getPgClient());
+    if (!user) {
+      sendJsonResponse(res, 404, "user not found");
+      return;
+    }
     const verifToken = crypto.randomBytes(32).toString("hex");
-    const verifTokenProcess = await saveUserVerifToken(userEmail, verifToken);
+    const verifTokenProcess = await saveUserVerifToken(user.email, verifToken);
     if (!verifTokenProcess) {
       sendJsonResponse(res, 500, "mailer has failed");
       return;
     }
     // send email to user with validation link containing validation token
     sendEmail(
-      userEmail,
+      user.email,
       "validate your registration to yactouat.com",
       `<p>Hey 👋 and welcome to yactouat.com! Please click on <a href="${encodeURI(
-        "https://www.yactouat.com/?vt=" + verifToken + "&e=" + userEmail
+        "https://www.yactouat.com/?vt=" +
+          verifToken +
+          "&e=" +
+          user.email +
+          "&i=" +
+          user.id
       )}">this link</a> to validate your registration. Thanks for joining my PIPS! 🙏</p>`
     );
     sendJsonResponse(res, 200, "mailer has processed input");
