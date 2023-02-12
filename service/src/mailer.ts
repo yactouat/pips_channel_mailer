@@ -46,7 +46,7 @@ MAILER.post(
     // send email to user with validation link containing validation token
     sendEmail(
       user.email,
-      "validate your registration to yactouat.com",
+      "<h1>validate your registration to yactouat.com</h1>",
       `<p>Hey 👋 and welcome to yactouat.com! Please click on <a href="${encodeURI(
         "https://www.yactouat.com/?veriftoken=" +
           verifToken +
@@ -55,7 +55,7 @@ MAILER.post(
           "&userid=" +
           user.id
       )}">this link</a> to validate your registration.</p>
-      <p>Validating your account from your mailbox allows me to triage spammy bots 🤖 from valuable human beings like you ❤️.</p>
+      <p>Validating your profile from your mailbox allows me to triage spammy bots 🤖 from valuable human beings like you ❤️.</p>
       <p>Thanks again for joining my PIPS! 🙏</p>`
     );
     sendJsonResponse(res, 200, "mailer has processed input");
