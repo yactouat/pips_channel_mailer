@@ -6,7 +6,6 @@ import {
   getUserFromDb,
   sendJsonResponse,
 } from "pips_resources_definitions/dist/behaviors";
-import { TokenResource } from "pips_resources_definitions/dist/resources";
 
 import sendEmail from "./send-email";
 import saveUserVerifToken from "./insert-user-verification-token";
@@ -49,13 +48,15 @@ MAILER.post(
       user.email,
       "validate your registration to yactouat.com",
       `<p>Hey 👋 and welcome to yactouat.com! Please click on <a href="${encodeURI(
-        "https://www.yactouat.com/?vt=" +
+        "https://www.yactouat.com/?veriftoken=" +
           verifToken +
-          "&e=" +
+          "&email=" +
           user.email +
-          "&i=" +
+          "&userid=" +
           user.id
-      )}">this link</a> to validate your registration. Thanks for joining my PIPS! 🙏</p>`
+      )}">this link</a> to validate your registration.</p>
+      <p>Validating your account from your mailbox allows me to triage spammy bots 🤖 from valuable human beings like you ❤️.</p>
+      <p>Thanks again for joining my PIPS! 🙏</p>`
     );
     sendJsonResponse(res, 200, "mailer has processed input");
   }
