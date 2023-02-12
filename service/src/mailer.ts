@@ -48,7 +48,7 @@ MAILER.post(
       user.email,
       "<h1>validate your registration to yactouat.com</h1>",
       `<p>Hey 👋 and welcome to yactouat.com! Please click on <a href="${encodeURI(
-        "https://www.yactouat.com/?veriftoken=" +
+        "https://www.yactouat.com/profile?veriftoken=" +
           verifToken +
           "&email=" +
           user.email +
