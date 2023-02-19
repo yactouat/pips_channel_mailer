@@ -1,7 +1,7 @@
-import saveUserVerifToken from "../src/save-user-verif-token";
 import {
   getPgClient,
   migrateDb,
+  saveUserToken,
 } from "./../node_modules/pips_resources_definitions/dist/behaviors";
 
 const truncateUsersTable = async () => {
@@ -17,8 +17,8 @@ beforeAll(async () => {
 
 describe("insert user verification token", () => {
   it("returns false when user does not exist in db", async () => {
-    const actual = await saveUserVerifToken("ghost@domain.com", "token");
-    expect(actual).toBe(false);
+    const actual = await saveUserToken("ghost@domain.com", "User_Verification");
+    expect(actual == "").toBe(true);
     // tear down
     await truncateUsersTable();
   });
@@ -34,9 +34,9 @@ describe("insert user verification token", () => {
     );
     await pgClient.end();
     // act
-    const actual = await saveUserVerifToken(userEmail, "token");
+    const actual = await saveUserToken(userEmail, "User_Verification");
     // assert
-    expect(actual).toBe(true);
+    expect(actual != "").toBe(true);
     // tear down
     await truncateUsersTable();
   });
