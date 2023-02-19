@@ -1,4 +1,4 @@
-import saveUserVerifToken from "../src/insert-user-verification-token";
+import saveUserVerifToken from "../src/save-user-verif-token";
 import {
   getPgClient,
   migrateDb,

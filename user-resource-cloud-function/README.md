@@ -16,7 +16,7 @@
 
 ## what is this ?
 
-this repo holds the code for my Google Cloud Function that is triggered when a new user is created in my PIPS via a push Pub/Sub subscription using EventArc, its job is to parse the received the message and to call whatever code is responsible for sending a verification email to the user
+this repo holds the code for my Google Cloud Function that is triggered when changes to the users resource occur. This is done in my PIPS via a push Pub/Sub subscription using EventArc. Its job is to parse the received the message and to call the PIPS mailer API (for now) in order to notify the given user that a change in his data happened.
 
 the function does not allow unauthorized access, it's only triggered by a Pub/Sub topic updates happening in the GCP project
 

@@ -1,14 +1,17 @@
 import { body, validationResult } from "express-validator";
-import crypto from "crypto";
 import express from "express";
 import {
   getPgClient,
-  getUserFromDb,
+  getUserFromDbWithEmail,
+  saveUserToken,
   sendJsonResponse,
 } from "pips_resources_definitions/dist/behaviors";
 
 import sendEmail from "./send-email";
-import saveUserVerifToken from "./insert-user-verification-token";
+import validateUserTokenType from "./validate-user-token-type";
+import linkTokenToUserMod from "./link-token-to-user-mod";
+
+const mailerHasFailedMsg = "mailer has failed";
 
 const MAILER = express();
 MAILER.use(express.json());
@@ -19,8 +22,13 @@ MAILER.get("/", async (req, res) => {
 
 MAILER.post(
   "/",
-  body("userEmail").isEmail(),
   body("pipsToken").notEmpty().isString(),
+  body("userEmail").isEmail(),
+  body("userModId").isInt().optional(),
+  body("userToken").isString().optional(),
+  body("userTokenType").custom((value) => {
+    return validateUserTokenType(value);
+  }),
   async (req, res) => {
     const errors = validationResult(req);
     // ! you need PIPS_OWNER_EMAIL and PIPS_TOKEN in your .env file or vars here
@@ -31,34 +39,85 @@ MAILER.post(
       sendJsonResponse(res, 401, "invalid request");
       return;
     }
-    // creating a validation token
-    const user = await getUserFromDb(req.body.userEmail, getPgClient());
+
+    // creating a token of allowed type
+    const user = await getUserFromDbWithEmail(
+      req.body.userEmail,
+      getPgClient()
+    );
     if (!user) {
       sendJsonResponse(res, 404, "user not found");
       return;
     }
-    const verifToken = crypto.randomBytes(32).toString("hex");
-    const verifTokenProcess = await saveUserVerifToken(user.email, verifToken);
-    if (!verifTokenProcess) {
-      sendJsonResponse(res, 500, "mailer has failed");
+    const newToken = await saveUserToken(user.email, req.body.userTokenType);
+    if (newToken == "") {
+      console.error("user token creation failed with params: ", req.body);
+      sendJsonResponse(res, 500, mailerHasFailedMsg);
       return;
     }
-    // send email to user with validation link containing validation token
-    sendEmail(
-      user.email,
-      "validate your registration to yactouat.com",
-      `<p>Hey 👋 and welcome to yactouat.com! Please click on <a href="${encodeURI(
-        "https://www.yactouat.com/profile?veriftoken=" +
-          verifToken +
-          "&email=" +
-          user.email +
-          "&userid=" +
-          user.id
-      )}">this link</a> to validate your registration.</p>
-      <p>Validating your profile from your mailbox allows me to triage spammy bots 🤖 from valuable human beings like you ❤️.</p>
-      <p>Thanks again for joining my PIPS! 🙏</p>`
-    );
-    sendJsonResponse(res, 200, "mailer has processed input");
+
+    if (req.body.userTokenType === "User_Modification") {
+      try {
+        await linkTokenToUserMod(newToken, req.body.userModId);
+      } catch (error) {
+        console.error(
+          "token linkeage to user mod failed with params: ",
+          req.body,
+          " and token: ",
+          newToken
+        );
+        sendJsonResponse(res, 500, mailerHasFailedMsg);
+        return;
+      }
+    }
+
+    // constructing email
+    let emailSubject = "";
+    let emailText = "";
+    let tokenTypeSupported = true;
+    switch (req.body.userTokenType) {
+      case "User_Modification":
+        emailSubject = "request to modify your yactouat.com profile";
+        emailText = `<p>Hey 👋 from yactouat.com</p>
+        <p>A request has been made to modify your personal data ! If this request originates from you, please click on <a href="${encodeURI(
+          "https://www.yactouat.com/profile?modifytoken=" +
+            newToken +
+            "&email=" +
+            user.email +
+            "&userid=" +
+            user.id
+        )}">this link</a> to validate this modification.</p>
+        <p>If this request does not come from you, please send an email to ${
+          process.env.PIPS_OWNER_EMAIL
+        } and we'll look into it.</p>
+        <p>Thanks again for being a member of my Portable Integrated Personal System ! 🙏</p>`;
+        break;
+      case "User_Verification":
+        emailSubject = "validate your registration to yactouat.com";
+        emailText = `<p>Hey 👋 and welcome to yactouat.com! Please click on <a href="${encodeURI(
+          "https://www.yactouat.com/profile?veriftoken=" +
+            newToken +
+            "&email=" +
+            user.email +
+            "&userid=" +
+            user.id
+        )}">this link</a> to validate your registration.</p>
+        <p>Validating your profile from your mailbox allows me to triage spammy bots 🤖 from valuable human beings like you ❤️.</p>
+        <p>Thanks again for joining my Portable Integrated Personal System ! 🙏</p>`;
+        break;
+      default: // means the token type is not supported
+        console.error("token type not supported: ", req.body.userTokenType);
+        sendJsonResponse(res, 500, mailerHasFailedMsg);
+        tokenTypeSupported = false;
+        break;
+    }
+
+    // sending email
+    if (tokenTypeSupported == true) {
+      // send email to user with link containing token to validate any action
+      sendEmail(user.email, emailSubject, emailText);
+      sendJsonResponse(res, 200, "mailer has processed input");
+    }
   }
 );
 
