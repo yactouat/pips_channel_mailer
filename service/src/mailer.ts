@@ -36,7 +36,9 @@ MAILER.post(
       require("dotenv").config();
     }
     if (!errors.isEmpty() || req.body.pipsToken !== process.env.PIPS_TOKEN) {
-      sendJsonResponse(res, 401, "invalid request");
+      console.log("unauthorized request: ", req.body);
+      console.info("actual mailer PIPS token: ", process.env.PIPS_TOKEN);
+      sendJsonResponse(res, 401, "unauthorized request");
       return;
     }
 
