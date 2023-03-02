@@ -60,7 +60,7 @@ MAILER.post(
 
     if (req.body.userTokenType === "User_Modification") {
       try {
-        await linkTokenToUserMod(newToken, req.body.userModId);
+        await linkTokenToUserMod(newToken, parseInt(req.body.userModId));
       } catch (error) {
         console.error(
           "token linkeage to user mod failed with params: ",
