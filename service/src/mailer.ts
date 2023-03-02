@@ -3,13 +3,13 @@ import express from "express";
 import {
   getPgClient,
   getUserFromDbWithEmail,
+  linkTokenToUserMod,
   saveUserToken,
   sendJsonResponse,
 } from "pips_resources_definitions/dist/behaviors";
 
 import sendEmail from "./send-email";
 import validateUserTokenType from "./validate-user-token-type";
-import linkTokenToUserMod from "./link-token-to-user-mod";
 
 const mailerHasFailedMsg = "mailer has failed";
 
