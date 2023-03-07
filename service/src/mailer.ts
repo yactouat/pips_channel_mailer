@@ -1,7 +1,6 @@
 import { body, validationResult } from "express-validator";
 import express from "express";
 import {
-  getPgClient,
   getUserFromDbWithEmail,
   linkTokenToUserMod,
   saveUserToken,
@@ -43,10 +42,7 @@ MAILER.post(
     }
 
     // creating a token of allowed type
-    const user = await getUserFromDbWithEmail(
-      req.body.userEmail,
-      getPgClient()
-    );
+    const user = await getUserFromDbWithEmail(req.body.userEmail);
     if (!user) {
       sendJsonResponse(res, 404, "user not found");
       return;

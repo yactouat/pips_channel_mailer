@@ -31,6 +31,6 @@
     "express": "^4.18.2",
     "express-validator": "^6.14.3",
     "nodemailer": "^6.9.1",
-    "pips_resources_definitions": "^11.4.0"
+    "pips_resources_definitions": "^12.0.0"
   }
 }

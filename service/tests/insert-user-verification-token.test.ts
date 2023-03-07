@@ -1,14 +1,11 @@
 import {
-  getPgClient,
   migrateDb,
+  runPgQuery,
   saveUserToken,
 } from "./../node_modules/pips_resources_definitions/dist/behaviors";
 
 const truncateUsersTable = async () => {
-  const pgClient = getPgClient();
-  pgClient.connect();
-  await pgClient.query("TRUNCATE TABLE users CASCADE");
-  await pgClient.end();
+  await runPgQuery("TRUNCATE TABLE users CASCADE");
 };
 
 beforeAll(async () => {
@@ -26,13 +23,10 @@ describe("insert user verification token", () => {
   it("returns true when user exists in db", async () => {
     // arrange
     const userEmail = "yacine.touati.pro@gmail.com";
-    const pgClient = getPgClient();
-    pgClient.connect();
-    await pgClient.query(
+    await runPgQuery(
       "INSERT INTO users(email, password, socialHandle, socialHandleType) VALUES ($1, $2, $3, $4) RETURNING *",
       [userEmail, "password", "handle", "LinkedIn"]
     );
-    await pgClient.end();
     // act
     const actual = await saveUserToken(userEmail, "User_Verification");
     // assert
