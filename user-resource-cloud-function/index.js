@@ -24,9 +24,12 @@ exports.transmitSubMessage = async (event, context) => {
     userTokenType: event.attributes["userTokenType"],
   };
 
+  console.log("PAYLOAD ", payload);
+  console.log("EVENT ATTRIBUTES ", event.attributes);
+
   if (
     event.attributes["userTokenType"] == "User_Modification" &&
-    (!payload["userToken"] || !payload["userModId"])
+    (!event.attributes["userToken"] || !event.attributes["userModId"])
   ) {
     throw new Error(
       `userTokenType "User_Modification" was provided without a user token or user modification id`
