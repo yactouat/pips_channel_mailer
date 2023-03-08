@@ -85,9 +85,9 @@ MAILER.post(
             "&userid=" +
             user.id
         )}">this link</a> to validate this modification.</p>
-        <p>If this request does not come from you, please send an email to ${
+        <p>If this request does not come from you, you can discard it entireley or send an email to ${
           process.env.PIPS_OWNER_EMAIL
-        } and we'll look into it.</p>
+        } so we look into it.</p>
         <p>Thanks again for being a member of my Portable Integrated Personal System ! 🙏</p>`;
         break;
       case "User_Verification":

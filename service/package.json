@@ -1,6 +1,6 @@
 {
   "name": "pips_channel_mailer",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "mailer.yactouat.com",
   "main": "./dist/mailer.js",
   "scripts": {
