@@ -29,15 +29,14 @@ exports.transmitSubMessage = async (event, context) => {
 
   if (
     event.attributes["userTokenType"] == "User_Modification" &&
-    (!event.attributes["userToken"] || !event.attributes["userModId"])
+    !event.attributes["userModId"]
   ) {
     throw new Error(
-      `userTokenType "User_Modification" was provided without a user token or user modification id`
+      `userTokenType "User_Modification" was provided without a user modification id`
     );
   }
   if (event.attributes["userTokenType"] == "User_Modification") {
     payload["userModId"] = parseInt(event.attributes["userModId"]);
-    payload["userToken"] = event.attributes["userToken"];
   }
 
   await axios.post(process.env.MAILER_SERVICE_URL, payload);

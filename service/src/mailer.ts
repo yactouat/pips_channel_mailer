@@ -24,7 +24,6 @@ MAILER.post(
   body("pipsToken").notEmpty().isString(),
   body("userEmail").isEmail(),
   body("userModId").isInt().optional(),
-  body("userToken").isString().optional(),
   body("userTokenType").custom((value) => {
     return validateUserTokenType(value);
   }),
