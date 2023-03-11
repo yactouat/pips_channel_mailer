@@ -39,7 +39,7 @@ exports.transmitSubMessage = async (event, context) => {
     payload["userModId"] = parseInt(event.attributes["userModId"]);
   }
 
-  await axios.post(process.env.MAILER_SERVICE_URL, payload);
+  const res = await axios.post(process.env.MAILER_SERVICE_URL, payload);
   console.info(
     `sending email request to ${usrEmailMsg} resulted in status code ${res.status}`
   );
