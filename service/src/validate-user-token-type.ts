@@ -5,6 +5,7 @@ const validateUserTokenType = (
 ): userTokenType is TokenType => {
   return [
     "User_Authentication",
+    "User_Deletion",
     "User_Modification",
     "User_Verification",
   ].includes(userTokenType);

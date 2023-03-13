@@ -73,6 +73,22 @@ MAILER.post(
     let emailText = "";
     let tokenTypeSupported = true;
     switch (req.body.userTokenType) {
+      case "User_Deletion":
+        emailSubject = "request to delete your yactouat.com profile";
+        emailText = `<p>Hey 👋 from yactouat.com</p>
+        <p>A request has been made to delete your personal data ! If this request originates from you, please click on <a href="${encodeURI(
+          "https://www.yactouat.com/profile?deletetoken=" +
+            newToken +
+            "&email=" +
+            user.email +
+            "&userid=" +
+            user.id
+        )}">this link</a> to validate your profile deletion.</p>
+        <p>If this request does not come from you, you can discard it entirely or send an email to ${
+          process.env.PIPS_OWNER_EMAIL
+        } so we look into it.</p>
+        <p>Thanks again for your interest for my Portable Integrated Personal System ! 🙏</p>`;
+        break;
       case "User_Modification":
         emailSubject = "request to modify your yactouat.com profile";
         emailText = `<p>Hey 👋 from yactouat.com</p>

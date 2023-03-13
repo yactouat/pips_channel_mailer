@@ -1,6 +1,6 @@
 {
   "name": "pips_channel_mailer",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "mailer.yactouat.com",
   "main": "./dist/mailer.js",
   "scripts": {
@@ -31,6 +31,6 @@
     "express": "^4.18.2",
     "express-validator": "^6.14.3",
     "nodemailer": "^6.9.1",
-    "pips_resources_definitions": "^12.0.0"
+    "pips_resources_definitions": "^13.2.0"
   }
 }

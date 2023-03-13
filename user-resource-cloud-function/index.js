@@ -28,6 +28,13 @@ exports.transmitSubMessage = async (event, context) => {
   console.log("EVENT ATTRIBUTES ", event.attributes);
 
   if (
+    !["User_Verification", "User_Modification", "User_Deletion"].includes(
+      event.attributes["userTokenType"]
+    )
+  ) {
+    throw new Error(`provided user token type is not supported`);
+  }
+  if (
     event.attributes["userTokenType"] == "User_Modification" &&
     !event.attributes["userModId"]
   ) {
@@ -35,6 +42,7 @@ exports.transmitSubMessage = async (event, context) => {
       `userTokenType "User_Modification" was provided without a user modification id`
     );
   }
+
   if (event.attributes["userTokenType"] == "User_Modification") {
     payload["userModId"] = parseInt(event.attributes["userModId"]);
   }
