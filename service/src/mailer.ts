@@ -46,7 +46,7 @@ MAILER.post(
     switch (req.body.userTokenType) {
       case "User_Verification":
         emailSubject = "a new user signed up to yactouat.com !";
-        emailText = `<p>Hey me 👋 you have a new yactouat.com user ! his email is ${req.body.userEmail}">, kinda cool uh ?</p>
+        emailText = `<p>Hey me 👋 you have a new yactouat.com user ! his email is ${req.body.userEmail}, kinda cool uh ?</p>
         <p>Long live my Portable Integrated Personal System ! 💪</p>`;
         break;
       default: // means the token type is not supported
