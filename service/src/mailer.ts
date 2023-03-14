@@ -20,7 +20,57 @@ MAILER.get("/", async (req, res) => {
 });
 
 MAILER.post(
-  "/",
+  "/mail-owner",
+  body("pipsToken").notEmpty().isString(),
+  body("userEmail").isEmail(),
+  body("userTokenType").custom((value) => {
+    return validateUserTokenType(value);
+  }),
+  async (req, res) => {
+    const errors = validationResult(req);
+    // ! you need PIPS_OWNER_EMAIL and PIPS_TOKEN in your .env file or vars here
+    if (process.env.NODE_ENV === "development") {
+      require("dotenv").config();
+    }
+    if (!errors.isEmpty() || req.body.pipsToken !== process.env.PIPS_TOKEN) {
+      console.log("unauthorized request: ", req.body);
+      console.info("actual mailer PIPS token: ", process.env.PIPS_TOKEN);
+      sendJsonResponse(res, 401, "unauthorized request");
+      return;
+    }
+
+    // constructing email
+    let emailSubject = "";
+    let emailText = "";
+    let tokenTypeSupported = true;
+    switch (req.body.userTokenType) {
+      case "User_Verification":
+        emailSubject = "a new user signed up to yactouat.com !";
+        emailText = `<p>Hey me 👋 you have a new yactouat.com user ! his email is ${req.body.userEmail}">, kinda cool uh ?</p>
+        <p>Long live my Portable Integrated Personal System ! 💪</p>`;
+        break;
+      default: // means the token type is not supported
+        console.error("token type not supported: ", req.body.userTokenType);
+        sendJsonResponse(res, 500, mailerHasFailedMsg);
+        tokenTypeSupported = false;
+        break;
+    }
+
+    // sending email
+    if (tokenTypeSupported == true) {
+      // send email to user with link containing token to validate any action
+      sendEmail(
+        process.env.PIPS_OWNER_EMAIL as string,
+        emailSubject,
+        emailText
+      );
+      sendJsonResponse(res, 200, "mailer has processed input");
+    }
+  }
+);
+
+MAILER.post(
+  "/mail-user",
   body("pipsToken").notEmpty().isString(),
   body("userEmail").isEmail(),
   body("userModId").isInt().optional(),

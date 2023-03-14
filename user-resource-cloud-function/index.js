@@ -47,7 +47,14 @@ exports.transmitSubMessage = async (event, context) => {
     payload["userModId"] = parseInt(event.attributes["userModId"]);
   }
 
-  const res = await axios.post(process.env.MAILER_SERVICE_URL, payload);
+  if (event.attributes["userTokenType"] == "User_Verification") {
+    await axios.post(`${process.env.MAILER_SERVICE_URL}/mail-owner`, payload);
+  }
+
+  const res = await axios.post(
+    `${process.env.MAILER_SERVICE_URL}/mail-user`,
+    payload
+  );
   console.info(
     `sending email request to ${usrEmailMsg} resulted in status code ${res.status}`
   );
